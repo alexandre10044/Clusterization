@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: result
+  template:
+    metadata:
+      labels:
+        app: result
+    spec:
+      restartPolicy: Always
+      containers:
+        envFrom:
+          - configMapRef:
+            name: postgrescfg
+      - name: result
+        image: epitechcontent/t-dop-600-result:k8s
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+
+metadata:
+  name: result
+data:
+  REDIS_HOST: redis
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: db
+  POSTGRES_USER: root
+  POSTGRES_PASSWORD: mysupersecretpassword

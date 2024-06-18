@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+data:
+  REDIS_HOST: redis
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: db
+  POSTGRES_USER: root
+  POSTGRES_PASSWORD: mysupersecretpassword
+
+spec:
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      restartPolicy: Always
+      containers:
+        envFrom:
+          - configMapRef:
+            name: postgrescfg
+          - configMapRef:
+            name: rediscfg
+      - name: worker
+        image: epitechcontent/t-dop-600-worker:k8s
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+      env:
